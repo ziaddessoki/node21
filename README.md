@@ -3,13 +3,13 @@
 **Concert-this**
 
 <p align="center">
-  <img  scr="img/concert-this.png">
+  <img  scr="img/Concert-this.png">
 </p>
 
 **Spotify-this**
 
 <p align="center">
-  <img  scr="img/spotify-this">
+  <img  scr="img/Spotify-this.png">
 </p>
 
 **Movie-this**
