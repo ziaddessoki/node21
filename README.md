@@ -3,19 +3,19 @@
 **Concert-this**
 
 <p align="center">
-  <img  scr="../img/concert-this.png">
+  <img  scr="img/concert-this.png">
 </p>
 
 **Spotify-this**
 
 <p align="center">
-  <img  scr="../img/spotify-this">
+  <img  scr="img/spotify-this">
 </p>
 
 **Movie-this**
 
 <p align="center">
-  <img  src="./img/movie-this.png">
+  <img  src="img/movie-this.png">
 </p>
 
 **do-what-it-says**
