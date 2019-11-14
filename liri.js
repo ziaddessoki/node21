@@ -5,45 +5,49 @@ var Spotify = require('node-spotify-api');
 var keys = require("./keys.js");
 var spotify = new Spotify(keys.spotify);
 var fs = require("fs");
-var action = process.argv[2];
 
+liri(process.argv[2]);
 
-switch (action) {
+function liri(action, searchData){
+    var nodeArgs = process.argv;
+    var searchData = "";
+    for (var i = 3; i < nodeArgs.length; i++) {
+        if (i > 3 && i < nodeArgs.length) {
+            searchData = searchData + " " + nodeArgs[i];
+        } else {
+            searchData += nodeArgs[i];
+        }
+    }
+ switch (action) {
     case 'concert-this':
-        concert();
+        concert(searchData);
         break;
     case 'spotify-this':
-        spoti(process.argv[3]);
+           
+        spoti(searchData);
         break;
     case 'movie-this':
-        movie();
+        movie(searchData);
         break;
     case 'do-what-it-says':
         read();
         break;
+}
+
 };
 
-function concert() {
+function concert(bandName) {
 
-    var nodeArgs = process.argv;
-    var bandName = "";
-
-    for (var i = 3; i < nodeArgs.length; i++) {
-        if (i > 3 && i < nodeArgs.length) {
-            bandName = bandName + "+" + nodeArgs[i];
-        } 
-        else {
-            bandName += nodeArgs[i];
-        }
-    }
     axios.get("https://rest.bandsintown.com/artists/" + bandName + "/events?app_id=codingbootcamp")
         .then(function (response) {
+           
+            console.log("############--Concert-This--#################")
             for (var j = 0; j < response.data.length; j++) {
                 console.log("----------------------")
                 console.log("\r\n");
                 console.log("Venue name: " + response.data[j].venue.name);
                 console.log("\r");
-                console.log("Venue's City: " + response.data[j].venue.city);
+                console.log("Venue's City: " + response.data[j].venue.city +" "+ response.data[j].venue.region);
                 console.log("\r");
                 console.log("Concert date: " + response.data[j].datetime);
                 console.log("\r\n");
@@ -51,17 +55,12 @@ function concert() {
         })
         .catch(function (error) {
             if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
                 console.log(error.response.data);
                 console.log(error.response.status);
                 console.log(error.response.headers);
             } else if (error.request) {
-                // The request was made but no response was received
-                // `error.request` is an object that comes back with details pertaining to the error that occurred.
                 console.log(error.request);
             } else {
-                // Something happened in setting up the request that triggered an Error
                 console.log("Error", error.message);
             }
             console.log(error.config);
@@ -71,10 +70,13 @@ function concert() {
 function spoti(songName) {
 
 
+    spotify.search({ type: 'track', query: songName, limit: 5 })
+    .then(function (response) {
 
-    spotify.search({ type: 'track', query: songName }).then(function (response) {
+        console.log("############--Spotify-This--#################")
         response.tracks.items.map(function (item) {
             item.available_markets = [];
+            // console.log(response.tracks);
             //    console.log(Object.values(response.tracks.items[0].external_urls));
             console.log("---------------")
             console.log("---------------")
@@ -94,20 +96,11 @@ function spoti(songName) {
 
 };
 
-function movie() {
-    var nodeArgs = process.argv;
-    var movieName = "";
-    
-    for (var i = 3; i < nodeArgs.length; i++) {
-        if (i > 3 && i < nodeArgs.length) {
-            movieName = movieName + "+" + nodeArgs[i];
-        } else {
-            movieName += nodeArgs[i];
-        }
-    }
+function movie(movieName) {
+  
     axios.get("http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy").then(
         function (response) {
-            
+            console.log("############--Movie-This--#################")
             console.log("\r\n");
             console.log("Title: " + response.data.Title)
             console.log("\r");
@@ -121,15 +114,13 @@ function movie() {
             console.log("\r");
             console.log("Language: " + response.data.Language);
             console.log("\r");
-            console.log("plot: " + response.data.Plot);
+            console.log("Plot: " + response.data.Plot);
             console.log("\r");
             console.log("Actors: " + response.data.Actors);
             console.log("\r");
         })
         .catch(function (error) {
             if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx
                 console.log("---------------Data---------------");
                 console.log(error.response.data);
                 console.log("---------------Status---------------");
@@ -137,18 +128,13 @@ function movie() {
                 console.log("---------------Status---------------");
                 console.log(error.response.headers);
             } else if (error.request) {
-                // The request was made but no response was received
-                // `error.request` is an object that comes back with details pertaining to the error that occurred.
                 console.log(error.request);
             } else {
-                // Something happened in setting up the request that triggered an Error
                 console.log("Error", error.message);
             }
             console.log(error.config);
         });
 }
-
-
 
 function read() {
     fs.readFile("random.txt", "utf8", function (error, data) {
@@ -157,8 +143,21 @@ function read() {
         }
         console.log(data);
         var dataArr = data.split(",");
-        spoti(dataArr[1]);
-
-
+        
+       
+        if (dataArr[0] === 'spotify-this') {
+            spoti(dataArr[1]);
+        }
+        if (dataArr[0] === 'concert-this') {
+            concert(dataArr[1]);
+        }
+        if (dataArr[0] === 'movie-this') {
+            movie(dataArr[1]);
+        }
+        
+        // liri(dataArr[0], dataArr[1]);
+      
     });
+
 }
+
